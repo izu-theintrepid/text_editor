@@ -30,7 +30,7 @@ class Ui_text_editor(object):
 "  min-height: 20px;\n"
 "  min-width: 20px;")
         self.saveButton.setObjectName("saveButton")
-        self.sizeSpinBox = QtWidgets.QSpinBox(text_editor)
+        self.sizeSpinBox = QtWidgets.QSpinBox(text_editor,valueChanged = lambda : self.change_size(self.sizeSpinBox.value()))
         self.sizeSpinBox.setGeometry(QtCore.QRect(110, 15, 111, 30))
         self.sizeSpinBox.setStyleSheet("background-color: rgb(236, 226, 208);")
         self.sizeSpinBox.setObjectName("sizeSpinBox")
@@ -74,6 +74,8 @@ class Ui_text_editor(object):
                 str = self.textEdit.toPlainText()
                 with open(file_path, 'w') as f:
                     f.write(str)
+    def change_size(self,size):
+        self.textEdit.setFontPointSize(size)
     def retranslateUi(self, text_editor):
         _translate = QtCore.QCoreApplication.translate
         text_editor.setWindowTitle(_translate("text_editor", "Dialog"))
