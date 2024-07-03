@@ -30,16 +30,17 @@ class Ui_text_editor(object):
 "  min-height: 20px;\n"
 "  min-width: 20px;")
         self.saveButton.setObjectName("saveButton")
+        self.fontComboBox = QtWidgets.QFontComboBox(text_editor)
+        self.fontComboBox.currentFontChanged.connect(self.change_font)
+        self.fontComboBox.setGeometry(QtCore.QRect(110, 50, 181, 30))
+        self.fontComboBox.setStyleSheet("background-color: rgb(236, 226, 208);")
+        self.fontComboBox.setObjectName("fontComboBox")
         self.sizeSpinBox = QtWidgets.QSpinBox(text_editor,valueChanged = lambda : self.change_size(self.sizeSpinBox.value()))
         self.sizeSpinBox.setGeometry(QtCore.QRect(110, 15, 111, 30))
         self.sizeSpinBox.setStyleSheet("background-color: rgb(236, 226, 208);")
         self.sizeSpinBox.setObjectName("sizeSpinBox")
         self.sizeSpinBox.setRange(1, 40)
         self.sizeSpinBox.setValue(18)
-        self.fontComboBox = QtWidgets.QFontComboBox(text_editor)
-        self.fontComboBox.setGeometry(QtCore.QRect(110, 50, 181, 30))
-        self.fontComboBox.setStyleSheet("background-color: rgb(236, 226, 208);")
-        self.fontComboBox.setObjectName("fontComboBox")
         self.sizeLabel = QtWidgets.QLabel(text_editor)
         self.sizeLabel.setGeometry(QtCore.QRect(25, 15, 71, 21))
         self.sizeLabel.setStyleSheet("background-color: rgb(211, 165, 136);\n"
@@ -56,7 +57,7 @@ class Ui_text_editor(object):
 "  min-width: 30px;\n"
 "font: 11pt \"Sylfaen\";")
         self.fontLabel.setObjectName("fontLabel")
-        
+        self.textEdit.textChanged.connect(self.update_font_and_size)
         self.retranslateUi(text_editor)
         QtCore.QMetaObject.connectSlotsByName(text_editor)
 
@@ -76,6 +77,18 @@ class Ui_text_editor(object):
                     f.write(str)
     def change_size(self,size):
         self.textEdit.setFontPointSize(size)
+    def change_font(self, font):
+        current_size = self.sizeSpinBox.value()  # Get the current font size
+        self.textEdit.setCurrentFont(font)
+        self.textEdit.setFontPointSize(current_size)
+    def update_font_and_size(self):
+        # Check if the content is empty
+        if not self.textEdit.toPlainText():
+            # Get current font and size
+            current_font = self.fontComboBox.currentFont()
+            current_size = self.sizeSpinBox.value()
+            self.textEdit.setCurrentFont(current_font)
+            self.textEdit.setFontPointSize(current_size)
     def retranslateUi(self, text_editor):
         _translate = QtCore.QCoreApplication.translate
         text_editor.setWindowTitle(_translate("text_editor", "Dialog"))
