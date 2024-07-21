@@ -1,6 +1,5 @@
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets,QtGui
 from PyQt5.QtWidgets import QFileDialog, QInputDialog, QMenu, QAction
-import requests
 from thesaurus import Ui_Thesaurus
 class Ui_text_editor(object):
     def setupUi(self, text_editor):
@@ -66,30 +65,46 @@ class Ui_text_editor(object):
     def show_custom_context_menu(self, position):
         cursor = self.textEdit.textCursor()
         if cursor.hasSelection():
-            # Create custom context menu
+        # Create custom context menu
             menu = self.textEdit.createStandardContextMenu()
-            
+        
             custom_action_1 = QAction('Thesaurus', self.textEdit)
             custom_action_1.triggered.connect(self.thesaurus)
             menu.addAction(custom_action_1)
 
-            # custom_action_2 = QAction('Custom Action 2', self.textEdit)
-            # custom_action_2.triggered.connect(self.custom_action_2)
-            # menu.addAction(custom_action_2)
-
-            # Show the context menu
+        # Show the context menu
             menu.exec_(self.textEdit.mapToGlobal(position))
         else:
         # Show the default context menu
             menu = self.textEdit.createStandardContextMenu()
             menu.exec_(self.textEdit.mapToGlobal(position))
 
+
     def thesaurus(self):
         self.thesaurus=QtWidgets.QMainWindow()
         self.ui = Ui_Thesaurus()
-        self.ui.setupUi(self.thesaurus)
+        self.ui.setupUi(self.thesaurus,self)
         self.ui.lineEdit.setText(self.textEdit.textCursor().selectedText())
         self.thesaurus.show()
+    def change_word(self, word):
+        cursor = self.textEdit.textCursor()
+        if cursor.hasSelection():
+            start = cursor.selectionStart()
+            end = cursor.selectionEnd()
+        
+            cursor.beginEditBlock()  # Begin an editing block to group operations
+            cursor.removeSelectedText()  # Remove the selected text
+            cursor.insertText(word)  # Insert the new word
+        
+        # Adjust the cursor to select the new word
+            cursor.setPosition(start)
+            cursor.movePosition(QtGui.QTextCursor.Right, QtGui.QTextCursor.KeepAnchor, len(word))
+            cursor.endEditBlock()  # End the editing block
+        
+            # Set the modified cursor back to the textEdit
+            self.textEdit.setTextCursor(cursor)
+
+
 
 
 
@@ -121,6 +136,7 @@ class Ui_text_editor(object):
             current_size = self.sizeSpinBox.value()
             self.textEdit.setCurrentFont(current_font)
             self.textEdit.setFontPointSize(current_size)
+    
     def retranslateUi(self, text_editor):
         _translate = QtCore.QCoreApplication.translate
         text_editor.setWindowTitle(_translate("text_editor", "Dialog"))

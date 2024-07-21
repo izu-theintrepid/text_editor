@@ -12,31 +12,42 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import requests
 
 class Ui_Thesaurus(object):
-    def setupUi(self, Thesaurus):
+    def setupUi(self, Thesaurus, text_editor):
         Thesaurus.setObjectName("Thesaurus")
-        Thesaurus.resize(500, 500)
+        Thesaurus.resize(700, 650)
         Thesaurus.setStyleSheet("background-color: #7A6563;")
         self.centralwidget = QtWidgets.QWidget(Thesaurus)
         self.centralwidget.setObjectName("centralwidget")
         self.listWidget = QtWidgets.QListWidget(self.centralwidget)
-        self.listWidget.setGeometry(QtCore.QRect(10, 50, 450, 450))
+        self.listWidget.setGeometry(QtCore.QRect(10, 50, 650, 550))
         self.listWidget.setStyleSheet("background-color: rgb(236, 226, 208);")
         self.listWidget.setObjectName("listWidget")
         self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineEdit.setGeometry(QtCore.QRect(10, 10, 220, 35))
+        self.lineEdit.setGeometry(QtCore.QRect(10, 10, 300, 35))
         self.lineEdit.setStyleSheet("background-color: rgb(211, 165, 136);\n"
 "\n"
 "font: 11pt \"Sylfaen\";")
         self.lineEdit.setObjectName("LineEdit")
-        self.pushButton = QtWidgets.QPushButton(self.centralwidget, clicked=lambda: self.search())
-        self.pushButton.setGeometry(QtCore.QRect(350, 10, 110, 35))
-        self.pushButton.setStyleSheet("background-color: #ECE2D0;\n"
+        self.searchButton = QtWidgets.QPushButton(self.centralwidget, clicked=lambda: self.search())
+        self.searchButton.setGeometry(QtCore.QRect(320, 10, 110, 35))
+        self.searchButton.setStyleSheet("background-color: #ECE2D0;\n"
 "font: 13pt \"Sylfaen\";\n"
 "border-radius: 10px;\n"
 "  min-height: 20px;\n"
 "  min-width: 20px;")
-        self.pushButton.setObjectName("pushButton")
-        self.pushButton.setText("Search")
+        self.searchButton.setObjectName("searchButton")
+        self.searchButton.setText("Search")
+
+        self.selectButton=QtWidgets.QPushButton(self.centralwidget,clicked=lambda: self.select(text_editor))
+        self.selectButton.setGeometry(QtCore.QRect(550, 10, 110, 35))
+        self.selectButton.setStyleSheet("background-color: #ECE2D0;\n"
+"font: 13pt \"Sylfaen\";\n"
+"border-radius: 10px;\n"
+"  min-height: 20px;\n"
+"  min-width: 20px;")
+        self.selectButton.setObjectName("selectButton")
+        self.selectButton.setText("Select")
+
         Thesaurus.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(Thesaurus)
         self.statusbar.setObjectName("statusbar")
@@ -60,7 +71,7 @@ class Ui_Thesaurus(object):
             if "synonyms" in data and data["synonyms"] != []:
                 self.listWidget.clear()
                 self.listWidget.addItems(data["synonyms"])
-                self.listWidget.itemClicked.connect(self.listWidget_currentItem)
+                #self.listWidget.itemClicked.connect(self.listWidget_currentItem)
                
                 
             else:
@@ -69,9 +80,11 @@ class Ui_Thesaurus(object):
                 
         else:
             print(f"Error: {response.status_code}, {response.text}")
-    def listWidget_currentItem(self):
+    
+    def select(self,text_editor):
         row=self.listWidget.currentRow()
-        print(self.listWidget.item(row).text())
+        text_editor.change_word(self.listWidget.item(row).text())
+    
         
     def retranslateUi(self, Thesaurus):
         _translate = QtCore.QCoreApplication.translate
@@ -83,6 +96,6 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     Thesaurus = QtWidgets.QMainWindow()
     ui = Ui_Thesaurus()
-    ui.setupUi(Thesaurus)
+    ui.setupUi(Thesaurus, None)
     Thesaurus.show()
     sys.exit(app.exec_())
